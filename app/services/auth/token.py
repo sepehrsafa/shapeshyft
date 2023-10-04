@@ -4,7 +4,7 @@ from fastapi import HTTPException, status
 from jose import JWTError, jwt
 from pydantic import ValidationError
 
-from app.config import AUTH
+from app.config import auth_settings
 from app.schemas.auth import RefreshTokenData, TokenData, TokenResponse
 from app.utils.exception import ShapeShyftException
 
@@ -12,9 +12,9 @@ from app.utils.exception import ShapeShyftException
 async def create_access_token(
     uuid, jti,phone_number, email
 ):
-    expire = datetime.utcnow() + timedelta(minutes=AUTH["ACCESS_TOKEN_EXPIRE_MINUTES"])
+    expire = datetime.utcnow() + timedelta(minutes=auth_settings.access_token_expire_minutes)
     refresh_expire = datetime.utcnow() + timedelta(
-        days=AUTH["REFRESH_TOKEN_EXPIRE_DAYS"]
+        days=auth_settings.refresh_token_expire_days
     )
     refresh_data = {
         "sub": str(uuid),
@@ -30,9 +30,9 @@ async def create_access_token(
         "exp": expire,
         "token_type": "access",
     }
-    token = jwt.encode(data, AUTH["SECRET_KEY"], algorithm=AUTH["ALGORITHM"])
+    token = jwt.encode(data, auth_settings.secret_key, algorithm=auth_settings.algorithm)
     refresh_token = jwt.encode(
-        refresh_data, AUTH["SECRET_KEY"], algorithm=AUTH["ALGORITHM"]
+        refresh_data, auth_settings.secret_key, algorithm=auth_settings.algorithm
     )
     return TokenResponse(
         access_token=token, refresh_token=refresh_token, token_type="bearer"
@@ -50,7 +50,7 @@ async def validate_token(security_scopes, token):
         headers={"WWW-Authenticate": authenticate_value},
     )
     try:
-        payload = jwt.decode(token, AUTH["SECRET_KEY"], algorithms=[AUTH["ALGORITHM"]])
+        payload = jwt.decode(token, auth_settings.secret_key, algorithms=[auth_settings.algorithm])
         username: str = payload.get("sub")
         if username is None:
             raise credentials_exception
@@ -78,7 +78,7 @@ async def validate_refresh_token(token):
         detail="Could not validate credentials",
     )
     try:
-        payload = jwt.decode(token, AUTH["SECRET_KEY"], algorithms=[AUTH["ALGORITHM"]])
+        payload = jwt.decode(token, auth_settings.secret_key, algorithms=[auth_settings.algorithm])
         username: str = payload.get("sub")
         if username is None:
             raise credentials_exception

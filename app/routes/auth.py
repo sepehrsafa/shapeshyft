@@ -16,6 +16,8 @@ from app.utils.exception import ShapeShyftException
 from app.utils.response import responses
 from app.services.auth import validate_refresh_token
 
+from app.services.auth import hash_password, check_password
+
 router = APIRouter(tags=["Authentication"])
 
 
@@ -52,6 +54,9 @@ async def password_login(data: UsernamePasswordLoginRequest):
     Future requests should include the access token in the Authorization header.
 
     """
+    hashed_pass = await hash_password("mypassword")
+    result = await check_password(hashed_pass, "mypassword")
+    print(result)  # Should print True
     return await _password_login(data)
 
 

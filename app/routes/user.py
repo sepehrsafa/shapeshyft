@@ -6,6 +6,7 @@ from app.services.auth.utils import get_current_user
 
 from app.utils.response import responses
 from app.utils.exception import ShapeShyftException
+from app.services.auth import hash_password
 
 router = APIRouter(
     tags=["User Account"],
@@ -15,8 +16,14 @@ router = APIRouter(
 # create create, update, delete, get, list
 @router.post("/", response_model=UserAccountResponse, responses=responses)
 async def create_user_account(data: UserAccountCreateRequest):
-    user_account = await UserAccount.create(**data.dict())
-
+    #remove password from data
+    hashed_password = await hash_password(data.password)
+    data = data.dict()
+    data.pop("password")
+    user_account = await UserAccount.create(
+        **data,
+        hashed_password=hashed_password
+    )
     return user_account
 
 
@@ -24,7 +31,6 @@ async def create_user_account(data: UserAccountCreateRequest):
 @router.get("/", response_model=list[UserAccountResponse], responses=responses)
 async def get_user_accounts(current_user: UserAccount = Security(get_current_user)):
     user_accounts = await UserAccount.all()
-
     return user_accounts
 
 
@@ -38,7 +44,6 @@ async def get_user_account(
     uuid: str, current_user: UserAccount = Security(get_current_user)
 ):
     user_account = UserAccount.all().filter(uuid=uuid).first()
-
     return user_account
 
 

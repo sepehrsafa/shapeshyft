@@ -11,12 +11,11 @@ from starlette.status import HTTP_400_BAD_REQUEST, HTTP_422_UNPROCESSABLE_ENTITY
 from tortoise.contrib.fastapi import register_tortoise
 
 from app.routes import auth, user
-from app.config import TORTOISE_ORM
+from app.config import tortoise_settings
 from app.schemas.general import Response
 from app.utils.exception import ShapeShyftException
 
 from app.models.user import UserAccount
-
 
 
 app = FastAPI(
@@ -33,7 +32,15 @@ app.include_router(auth.router, prefix=BASE_PREFIX + "/auth")
 
 register_tortoise(
     app,
-    config=TORTOISE_ORM,
+    config={
+        "connections": {"default": tortoise_settings.db_connection},
+        "apps": {
+            "models": {
+                "models": ["app.models"],
+                "default_connection": "default",
+            }
+        },
+    },
     # This will create the DB tables on startup (useful for development)
     generate_schemas=True,
     add_exception_handlers=True,

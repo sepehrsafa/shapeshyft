@@ -4,9 +4,9 @@ from datetime import datetime, timedelta
 import pytz
 from tortoise import fields, models
 
-from app.config import AUTH
+from app.config import auth_settings
 from app.schemas.auth import TokenResponse
-from app.services.auth import create_access_token, hash_password
+from app.services.auth import create_access_token, hash_password, check_password
 from app.utils.exception import ShapeShyftException
 from app.utils.validation import is_valid_email, is_valid_phone_number
 
@@ -33,10 +33,9 @@ class UserAccount(AuditableModel):
     def __str__(self):
         return f"{self.phone_number}"
 
-    async def set_password(self, password: str, save=True) -> None:
+    async def set_password(self, password: str) -> None:
         self.hashed_password = await hash_password(password)
-        if save:
-            await self.save()
+        await self.save()
 
     async def check_password(self, password) -> bool:
         return await check_password(self.hashed_password, password)
@@ -44,7 +43,7 @@ class UserAccount(AuditableModel):
     async def create_access_token(self) -> TokenResponse:
         jti = uuid.uuid4()
         refresh_expire = datetime.utcnow() + timedelta(
-            days=AUTH["REFRESH_TOKEN_EXPIRE_DAYS"]
+            days=auth_settings.refresh_token_expire_days
         )
 
         token: TokenResponse = await create_access_token(
@@ -52,7 +51,6 @@ class UserAccount(AuditableModel):
             jti,
             self.phone_number,
             self.email,
-            self.type,
         )
         await UserToken.create(
             jti=jti,
