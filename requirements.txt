@@ -1,6 +1,7 @@
 aiosqlite==0.17.0
 annotated-types==0.5.0
 anyio==3.7.1
+asyncpg==0.28.0
 atlastk==0.13.3
 bcrypt==4.0.1
 certifi==2023.7.22

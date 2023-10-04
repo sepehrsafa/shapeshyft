@@ -2,7 +2,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class TortoiseSettings(BaseSettings):
-    db_connection: str = "sqlite://db.sqlite3"
+    db_connection: str = "postgres://ksffmjucuemboo:c9b62cc1a63bea9f73e67b9d162b305b7e8528752cb3cdb1cda656ccb64007fb@ec2-3-210-173-88.compute-1.amazonaws.com:5432/d2pf8si7oigpvs"
 
 
 class AuthSettings(BaseSettings):
