@@ -14,6 +14,7 @@ from app.routes import auth, user
 from app.config import tortoise_settings
 from app.schemas.general import Response
 from app.utils.exception import ShapeShyftException
+from fastapi.middleware.cors import CORSMiddleware
 
 from app.models.user import UserAccount
 
@@ -22,6 +23,22 @@ app = FastAPI(
     title="ShapeShyft Account API",
     description="This is the API documentation for the ShapeShyft Account Service.",
     version="1.0.0",
+)
+origins = [
+    "https://shapeshyft.online/",
+    "http://shapeshyft.online/",
+    "http://localhost",
+    "http://localhost:8080",
+    "https://api.shapeshyft.online/",
+    "http://api.shapeshyft.online/"
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 BASE_PREFIX = "/api/account/v1"
