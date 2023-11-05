@@ -15,12 +15,18 @@ class UserAccountCreateRequest(Password):
     last_name: Optional[str] = None
 
 
+class PredictCaloriesRequest(BaseModel):
+    weight: float
+    height: float
+    age: int
 
 class UserAccount(BaseModel):
     uuid: UUID4
     phone_number: str
     email: Optional[EmailStr] = None
 
+class CaloriePredictionResponse(Response):
+    calories: float
 
 class UserAccountResponse(Response):
     uuid: UUID4
