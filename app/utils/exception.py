@@ -24,4 +24,5 @@ exception_codes = {
     "E1018": "Invalid Access Token",
     "E1019": "Invalid Refresh Token",
     "E1023": "Not found",
+    "E1024": "Duplicate entry",
 }

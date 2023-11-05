@@ -10,7 +10,7 @@ from starlette.responses import JSONResponse, Response
 from starlette.status import HTTP_400_BAD_REQUEST, HTTP_422_UNPROCESSABLE_ENTITY
 from tortoise.contrib.fastapi import register_tortoise
 
-from app.routes import auth, user
+from app.routes import auth, user, health
 from app.config import tortoise_settings
 from app.schemas.general import Response
 from app.utils.exception import ShapeShyftException
@@ -28,7 +28,7 @@ BASE_PREFIX = "/api/account/v1"
 
 app.include_router(user.router, prefix=BASE_PREFIX + "/user")
 app.include_router(auth.router, prefix=BASE_PREFIX + "/auth")
-
+app.include_router(health.router, prefix=BASE_PREFIX + "v1/health")
 
 register_tortoise(
     app,
