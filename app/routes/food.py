@@ -22,31 +22,16 @@ router = APIRouter(
 )
 
 
-
-
 # create foood
 @router.post("/", response_model=FoodModelSchema, responses=responses)
 async def create_food_for_user(
     data: FoodCreateRequest, current_user: UserAccount = Security(get_current_user)
 ):
-    """ 
+    """
     This endpoint creates a food item for the user
     """
     food = await FoodModel.create(**data.dict(), user=current_user)
     return food
-
-
-# get all by type
-@router.get("/{type}", response_model=list[FoodModelSchema], responses=responses)
-async def get_food_by_type_for_user(
-    type: FoodType, current_user: UserAccount = Security(get_current_user)
-):
-    """
-    This endpoint gets all food items by type for the user
-    """
-    foods = await FoodModel.all().filter(user=current_user, type=type)
-    return foods
-
 
 
 @router.get("/search", response_model=FoodSearchResponse, responses=responses)
@@ -82,4 +67,16 @@ async def search_food_database(
         foods_array.append(food)
 
     foods = FoodSearchResponse(items=foods_array)
+    return foods
+
+
+# get all by type
+@router.get("/{type}", response_model=list[FoodModelSchema], responses=responses)
+async def get_food_by_type_for_user(
+    type: FoodType, current_user: UserAccount = Security(get_current_user)
+):
+    """
+    This endpoint gets all food items by type for the user
+    """
+    foods = await FoodModel.all().filter(user=current_user, type=type)
     return foods
