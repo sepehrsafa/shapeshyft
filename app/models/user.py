@@ -62,14 +62,10 @@ class UserAccount(AuditableModel):
 
     @classmethod
     async def get_by_identifier(cls, identifier: str) -> "UserAccount":
-        if is_valid_phone_number(identifier):
-            user_field = "phone_number"
-        elif is_valid_email(identifier):
+        user_field = "phone_number"
+
+        if is_valid_email(identifier):
             user_field = "email"
-        else:
-            raise ValueError(
-                "Invalid identifier. Must be an email or phone number in E.164 format"
-            )
 
         query = {user_field: identifier.lower()}
 

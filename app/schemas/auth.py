@@ -41,9 +41,5 @@ class UsernamePasswordLoginRequest(Password):
 
     @validator("username", pre=True, always=True)
     def validate_username(cls, v):
-        if not (is_valid_email(v) or is_valid_phone_number(v)):
-            raise ValueError(
-                "Username is Invalid. Provide valid email or use +E64 format for phone numbers."
-            )
         return v.lower()
 

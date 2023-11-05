@@ -10,25 +10,39 @@ from starlette.responses import JSONResponse, Response
 from starlette.status import HTTP_400_BAD_REQUEST, HTTP_422_UNPROCESSABLE_ENTITY
 from tortoise.contrib.fastapi import register_tortoise
 
-from app.routes import auth, user, health
+
+from app.routes import auth, user, food, health
 from app.config import tortoise_settings
 from app.schemas.general import Response
 from app.utils.exception import ShapeShyftException
+from fastapi.middleware.cors import CORSMiddleware
 
 from app.models.user import UserAccount
 
 
 app = FastAPI(
-    title="ShapeShyft Account API",
-    description="This is the API documentation for the ShapeShyft Account Service.",
+    title="ShapeShyft API",
+    description="This is the API documentation for the ShapeShyft.",
     version="1.0.0",
 )
 
-BASE_PREFIX = "/api/account/v1"
+# Add CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allows all origins
+    allow_credentials=True,
+    allow_methods=["*"],  # Allows all methods
+    allow_headers=["*"],  # Allows all headers
+)
 
-app.include_router(user.router, prefix=BASE_PREFIX + "/user")
-app.include_router(auth.router, prefix=BASE_PREFIX + "/auth")
+BASE_PREFIX = "/api/"
+
+
+app.include_router(user.router, prefix=BASE_PREFIX + "account/v1/user")
+app.include_router(auth.router, prefix=BASE_PREFIX + "account/v1/auth")
+app.include_router(food.router, prefix=BASE_PREFIX + "v1/food")
 app.include_router(health.router, prefix=BASE_PREFIX + "v1/health")
+
 
 register_tortoise(
     app,
@@ -95,4 +109,5 @@ async def request_validation_exception_handler(
 # on start up
 @app.on_event("startup")
 async def startup_event():
-    return
+    pass
+

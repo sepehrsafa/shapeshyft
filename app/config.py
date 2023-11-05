@@ -1,9 +1,10 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
 import os
 
+
 class TortoiseSettings(BaseSettings):
-    #db_connection: str = os.environ['DATABASE_URL']
-    db_connection: str = "sqlite://db.sqlite3"
+    db_connection: str = os.environ['DATABASE_URL']
+    #db_connection: str = "sqlite://db.sqlite3"
 
 
 class AuthSettings(BaseSettings):
@@ -16,6 +17,10 @@ class AuthSettings(BaseSettings):
 class PasswordSettings(BaseSettings):
     encryption_key: bytes = b"MWqqeqUi9Ip8vRz7iuc0O16BC6XY-FUOBbOEl-zvog="
     password_hash_secret: bytes = b"your_secret_key_here"
+
+
+class APISettings(BaseSettings):
+    key: str = "667e86da72414219889ed347f37c8d89"
 
 
 # Create settings instance
