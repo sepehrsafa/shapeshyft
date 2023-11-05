@@ -10,7 +10,7 @@ from starlette.responses import JSONResponse, Response
 from starlette.status import HTTP_400_BAD_REQUEST, HTTP_422_UNPROCESSABLE_ENTITY
 from tortoise.contrib.fastapi import register_tortoise
 
-from app.routes import auth, user
+from app.routes import auth, user, food
 from app.config import tortoise_settings
 from app.schemas.general import Response
 from app.utils.exception import ShapeShyftException
@@ -20,8 +20,8 @@ from app.models.user import UserAccount
 
 
 app = FastAPI(
-    title="ShapeShyft Account API",
-    description="This is the API documentation for the ShapeShyft Account Service.",
+    title="ShapeShyft API",
+    description="This is the API documentation for the ShapeShyft.",
     version="1.0.0",
 )
 
@@ -34,10 +34,11 @@ app.add_middleware(
     allow_headers=["*"],  # Allows all headers
 )
 
-BASE_PREFIX = "/api/account/v1"
+BASE_PREFIX = "/api/"
 
-app.include_router(user.router, prefix=BASE_PREFIX + "/user")
-app.include_router(auth.router, prefix=BASE_PREFIX + "/auth")
+app.include_router(user.router, prefix=BASE_PREFIX + "account/v1/user")
+app.include_router(auth.router, prefix=BASE_PREFIX + "account/v1/auth")
+app.include_router(food.router, prefix=BASE_PREFIX + "v1/food")
 
 
 register_tortoise(
@@ -105,4 +106,4 @@ async def request_validation_exception_handler(
 # on start up
 @app.on_event("startup")
 async def startup_event():
-    return
+    pass
