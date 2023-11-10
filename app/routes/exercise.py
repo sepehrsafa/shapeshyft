@@ -1,20 +1,19 @@
-from fastapi import APIRouter, HTTPException, Security
+import requests
+import random
+import os
+from fastapi import APIRouter, Security
+from app.services.auth.utils import get_current_user
+from app.utils.response import responses
+from app.utils.exception import ShapeShyftException
+from app.models.exercise import Steps
+from app.models.user import UserAccount
 from app.schemas.exercise import (
     Exercise,
     ExerciseListResponse,
     StepsResponse,
     CreateStepsEntry,
 )
-from typing import Annotated
-from app.services.auth.utils import get_current_user
-from app.utils.response import responses
-from app.utils.exception import ShapeShyftException
-from app.services.auth import hash_password
-from app.models.exercise import Steps
-from app.models.user import UserAccount
-import json
-import requests
-import random
+
 
 API_KEY = "cj0WyK592A1TmR69GN0usQ==RYdWYu6qEPH2PsY3"
 
