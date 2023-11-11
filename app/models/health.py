@@ -12,7 +12,7 @@ class WaterEntries(AuditableModel):
     time = fields.DatetimeField(auto_now=True)
 
     class Meta:
-        table = "hydration_log"
+        table = "hydration_log_2"
 
 class SleepEntries(AuditableModel):
     uuid = fields.UUIDField(pk=True, default=uuid.uuid4)
