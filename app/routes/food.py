@@ -83,7 +83,10 @@ async def get_sum_of_calories_for_user(
     foods = await FoodModel.all().filter(user=current_user)
     calories = Decimal(0.0)
     for food in foods:
-        calories += Decimal(food.calories) * Decimal(food.number_of_units)
+        try:
+            calories += Decimal(food.calories) * Decimal(food.number_of_units)
+        except Exception as e:
+            print(e)
     return TotalCaloriesResponse(total_calories=calories)
 
 
