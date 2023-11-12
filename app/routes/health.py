@@ -46,8 +46,6 @@ async def update_water_amount(data: wEntry, current_user: UserAccount = Security
 
     return resp
 
-
-
 #Sleep
 @router.post("/createSleep", response_model=sResponse,responses=responses)
 async def create_sleep(current_user: UserAccount=Security(get_current_user)):

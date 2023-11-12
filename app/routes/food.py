@@ -4,14 +4,18 @@ from app.schemas.food import (
     FoodSearchResponse,
     FoodCreateRequest,
     FoodModel as FoodModelSchema,
+    MealModel as MealModelSchema,
     TotalCaloriesResponse,
+    MealPlan,
+    MealRecommendationResponse,
 )
 from typing import Annotated
 from app.services.auth.utils import get_current_user
-from app.models.food import FoodType, Food as FoodModel
+from app.models.food import FoodType, Food as FoodModel, Meals as MealModel
 from app.utils.response import responses
 from app.utils.exception import ShapeShyftException
 from app.services.auth import hash_password
+from app.services.predictions.meal_recommender import meal_recommendor
 from fatsecret import Fatsecret
 from app.models.user import UserAccount
 from decimal import Decimal
@@ -22,7 +26,6 @@ fs = Fatsecret("0047da412ebd469c9dd1895c7d3159d8", "2f91d6bcbaa94e72bea327eb4d6b
 router = APIRouter(
     tags=["Food & Calories"],
 )
-
 
 # create foood
 @router.post("/", response_model=FoodModelSchema, responses=responses)
@@ -35,6 +38,33 @@ async def create_food_for_user(
     food = await FoodModel.create(**data.dict(), user=current_user)
     return food
 
+@router.post("/createMealEntry",response_model = MealModelSchema, responses=responses)
+async def create_meal_plan_for_user(
+    data: MealPlan, current_user: UserAccount = Security(get_current_user)
+):
+    """
+    This endpoint creates a meal plan entry for the user
+    """
+    meal = await MealModel.create(**data.dict(), user=current_user)
+    return meal
+
+@router.get("/mealRecommendaton",response_model = MealRecommendationResponse, responses=responses)
+async def recommend_meals(
+    calories: int
+):
+    """
+    This endpoint returns a meal plan recommendation for the user
+    """
+    if(calories <= 9000 and calories >= 400):
+        meals = meal_recommendor.recommend_meal(calories)
+        calories = meals['calorie_intake']
+        breakfast = meals['meals']['breakfast']
+        lunch = meals['meals']['lunch']
+        dinner = meals['meals']['dinner']
+        snack = meals['meals']['snacks']
+        return {'breakfast': breakfast, 'lunch':lunch, 'dinner':dinner, 'snack':snack,'calories': str(calories)}
+    else: 
+        raise ShapeShyftException("E1025", 400)
 
 @router.get("/search", response_model=FoodSearchResponse, responses=responses)
 async def search_food_database(

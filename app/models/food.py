@@ -23,3 +23,14 @@ class Food(AuditableModel):
     protein = fields.CharField(max_length=100)
     link = fields.CharField(max_length=100)
     number_of_units = fields.IntField()
+
+class Meals(AuditableModel):
+    uuid = fields.UUIDField(pk=True, default=uuid.uuid4)
+    user = fields.ForeignKeyField("models.UserAccount", related_name="mealplan")
+    breakfast = fields.CharField(max_length = 100)
+    lunch = fields.CharField(max_length = 100)
+    dinner = fields.CharField(max_length = 100)
+    snack = fields.CharField(max_length = 100)
+    calories = fields.CharField(max_length = 10)
+    class Meta: 
+        table = "DailyMealPlan"
