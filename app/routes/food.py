@@ -15,6 +15,7 @@ from app.services.auth import hash_password
 from fatsecret import Fatsecret
 from app.models.user import UserAccount
 from decimal import Decimal
+from datetime import datetime
 
 fs = Fatsecret("0047da412ebd469c9dd1895c7d3159d8", "2f91d6bcbaa94e72bea327eb4d6b0546")
 # create a search endpoint
@@ -32,7 +33,9 @@ async def create_food_for_user(
     """
     This endpoint creates a food item for the user
     """
-    food = await FoodModel.create(**data.dict(), user=current_user)
+    # get today's date from system
+    date = datetime.today().strftime("%Y-%m-%d")
+    food = await FoodModel.create(**data.dict(), user=current_user, date=date)
     return food
 
 
@@ -76,11 +79,12 @@ async def search_food_database(
 @router.get("/totalCalories", response_model=TotalCaloriesResponse, responses=responses)
 async def get_sum_of_calories_for_user(
     current_user: UserAccount = Security(get_current_user),
+    date: str = datetime.today().strftime("%Y-%m-%d")
 ):
     """
     This endpoint gets the sum of all calories for the user
     """
-    foods = await FoodModel.all().filter(user=current_user)
+    foods = await FoodModel.all().filter(user=current_user, date=date)
     calories = Decimal(0.0)
     for food in foods:
         try:
@@ -93,10 +97,11 @@ async def get_sum_of_calories_for_user(
 # get all by type
 @router.get("/{type}", response_model=list[FoodModelSchema], responses=responses)
 async def get_food_by_type_for_user(
-    type: FoodType, current_user: UserAccount = Security(get_current_user)
+    type: FoodType, current_user: UserAccount = Security(get_current_user),
+    date: str = datetime.today().strftime("%Y-%m-%d")
 ):
     """
     This endpoint gets all food items by type for the user
     """
-    foods = await FoodModel.all().filter(user=current_user, type=type)
+    foods = await FoodModel.all().filter(user=current_user, type=type, date=date)
     return foods

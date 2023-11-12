@@ -23,3 +23,7 @@ class Food(AuditableModel):
     protein = fields.CharField(max_length=100)
     link = fields.CharField(max_length=100)
     number_of_units = fields.IntField()
+    date = fields.DateField()
+
+    class Meta:
+        table = "foods_2"

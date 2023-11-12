@@ -26,7 +26,7 @@ class Food(BaseModel):
 
 
 class FoodSearchResponse(Response):
-    items: list[Food]
+    items: list[FoodModel]
 
 
 class FoodCreateRequest(Food):
