@@ -23,6 +23,10 @@ class Food(AuditableModel):
     protein = fields.CharField(max_length=100)
     link = fields.CharField(max_length=100)
     number_of_units = fields.IntField()
+    date = fields.DateField()
+
+    class Meta:
+        table = "foods_2"
 
 class Meals(AuditableModel):
     uuid = fields.UUIDField(pk=True, default=uuid.uuid4)

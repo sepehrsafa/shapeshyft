@@ -30,7 +30,7 @@ class Food(BaseModel):
     number_of_units: int = 1
 
 class FoodSearchResponse(Response):
-    items: list[Food]
+    items: list[FoodModel]
 
 class MealRecommendationResponse(Response):
     breakfast: str
