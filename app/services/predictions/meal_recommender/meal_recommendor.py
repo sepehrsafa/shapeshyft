@@ -5,7 +5,7 @@ import json
 final_df = pd.read_csv("./app/services/predictions/meal_recommender/preprocessed_mealplans.csv")
 
 def recommend_meal(calorie_intake, tolerance=100):
-
+    """
     model = joblib.load('./app/services/predictions/meal_recommender/meal_recommendation_model.pkl')
 
     possible_meals = final_df[(final_df['calories'] >= calorie_intake - tolerance) &
@@ -32,7 +32,9 @@ def recommend_meal(calorie_intake, tolerance=100):
             'dinner': dinner_title
         }
     }
-    return recommendation
+    """
+    #replace return with the variable: "recommendation"
+    return {"calorie_intake": 100, "meals": {"breakfast": "a", "lunch":"b", "dinner":"c", "snacks":"d" }}
 
 
 
