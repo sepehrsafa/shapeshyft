@@ -22,10 +22,8 @@ class wEntryResponse(Response):
     amt : int
     date: datetime.date
     time: datetime.datetime
-    rec: str
 
 class sEntry(BaseModel):
-    date: datetime.date
     s_time: str
     e_time: str
 
@@ -37,4 +35,11 @@ class sEntryResponse(Response):
     s_time:  datetime.time
     e_time:  datetime.time
     h_slept: float
-    rec : str
+
+class tipResponse(Response):
+    s_rec: str
+    w_rec: str
+    status: str
+    tip1: str
+    tip2: str
+    tip3: str

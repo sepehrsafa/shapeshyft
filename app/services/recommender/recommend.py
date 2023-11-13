@@ -43,5 +43,37 @@ def sleep_rec(age,hrs):
             rec="You are getting a sufficient amount of sleep."
         else:
             rec="You are getting more hours of sleep than recommended for your age."
-
     return rec
+
+def bmi_rec(height,weight):
+    bmi=weight/((height/100)**2)
+    if(bmi<18.5):
+        rec={
+            "status":"You are underweight.",
+            "tip1":"Ensure you're getting enough calories to meet your body's energy needs.",
+            "tip2":"Focus on nutrient-dense foods to support overall health.",
+            "tip3":"Incorporate strength training exercises to build muscle mass in a healthy way."
+        }
+    elif(18.5<=bmi<25):
+        rec = {
+            "status": "You are maintaining a normal weight.",
+            "tip1": "Maintain a balanced diet with a variety of fruits, vegetables, whole grains, and lean proteins.",
+            "tip2": "Continue engaging in regular physical activity to support cardiovascular health.",
+            "tip3": "Consider incorporating flexibility and balance exercises into your routine."
+        }
+    elif(25<=bmi<30):
+        rec={
+            "status": "You are overweight.",
+            "tip1":"Gradually reduce portion sizes to help manage caloric intake.",
+            "tip2":"Increase daily physical activity to promote weight loss and overall well-being.",
+            "tip3":"Include more fiber-rich foods in your diet to enhance satiety."
+        }    
+    elif(bmi>=30):
+        rec={
+            "status": "You are obese",
+            "tip1":"Seek support from a healthcare professional or registered dietitian for personalized weight management strategies.",
+            "tip2":"Focus on making sustainable lifestyle changes rather than drastic, short-term measures.",
+            "tip3":"Include a combination of aerobic exercise, strength training, and flexibility exercises in your fitness routine."
+        }
+    return rec
+    
