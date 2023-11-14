@@ -42,7 +42,7 @@ async def create_or_edit_water_amount(data: wEntry, current_user: UserAccount = 
 @router.get("/getSleep", response_model=list[sEntryResponse], responses=responses)
 async def get_sleep(current_user: UserAccount=Security(get_current_user)):
     """
-    This endpoint returns the sleep entry for the user specified by date 'YYYY-MM-DD'
+    This endpoint returns list of the user's sleep entries
     """
     try:
         sleep_entry = await SleepEntries.all().filter(user=current_user)
