@@ -4,12 +4,14 @@ from app.schemas.health import wEntry, wEntryResponse, wGetResponse, sEntry, sEn
 from app.models.user import UserAccount
 from app.services.auth.utils import get_current_user
 from app.utils.exception import ShapeShyftException
-from datetime import date,datetime, time
+from datetime import datetime, date, time, timedelta, timezone
 from  app.services.recommender.recommend import water_rec,sleep_rec,bmi_rec
+from app.utils.validation import is_valid_time_format
 
 from app.utils.response import responses
 from app.utils.exception import ShapeShyftException
 
+import pytz
 
 router = APIRouter(
     tags=["Health profile"],
@@ -38,12 +40,16 @@ async def create_or_edit_water_amount(data: wEntry, current_user: UserAccount = 
 
 #get sleep log based on date
 @router.get("/getSleep", response_model=list[sEntryResponse], responses=responses)
-async def get_sleep(date: date, current_user: UserAccount=Security(get_current_user)):
+async def get_sleep(current_user: UserAccount=Security(get_current_user)):
     """
-    This endpoint returns the list of sleep entries for the user
+    This endpoint returns list of the user's sleep entries
     """
-    sleep_entry = await SleepEntries.all.filter(user=current_user)
-    return sleep_entry
+    try:
+        sleep_entry = await SleepEntries.all().filter(user=current_user)
+        return sleep_entry
+    except:
+        raise ShapeShyftException("E1023", 404)
+    
 
 #create sleep entry for today
 @router.post("/ceSleep", response_model=sEntryResponse, responses=responses)
@@ -52,32 +58,41 @@ async def create_or_edit_sleep(data : sEntry, current_user: UserAccount = Securi
     This endpoint is used to create/edit a sleep entry for today's date,
     Time format should be something like "12:04PM" for the strings
     """
-    sleep_entry, created = await SleepEntries.get_or_create(user=current_user,date=date.today(), defaults={'s_time': time.min, 'e_time': time.min, 'h_slept': 0})
-    #expected format to be something like 12:04PM
-    string1=data.s_time +" "+ date.today().strftime("%Y-%m-%d")
-    string2=data.e_time +" "+ date.today().strftime("%Y-%m-%d")
-    start = datetime.strptime(string1,'%I:%M%p %Y-%m-%d')
-    end = datetime.strptime(string2,'%I:%M%p %Y-%m-%d')
+    if data.s_time is not None and data.e_time is not None:
+        #expected format to be something like 12:04PM
+        string1=data.s_time 
+        string2=data.e_time
 
-    #calculate hours of sleep in float val
-    s=start.time()
-    e=end.time()
-    duration=end-start
-    duration_s=duration.total_seconds()
-    hours=duration_s/3600
+        #check if valid time format given
+        if is_valid_time_format(string1) and is_valid_time_format(string2):
 
-    #PM to AM check
-    if(hours<0):
-        hours_in=24+hours
+            et_timezone = timezone(timedelta(hours=-5))
+            start = datetime.strptime(string1, "%I:%M%p").replace(tzinfo=et_timezone)
+            end = datetime.strptime(string2, "%I:%M%p").replace(tzinfo=et_timezone)
+
+            #calculate hours of sleep in float val
+            s_time=start.timetz()
+            e_time=end.timetz()
+            duration=end-start
+            duration_s=duration.total_seconds()
+            hours=duration_s/3600
+
+            sleep_entry, created = await SleepEntries.get_or_create(user=current_user,date=date.today(), defaults={'s_time': time.min, 'e_time': time.min, 'h_slept': 0})
+            #PM to AM check
+            if(hours<0):
+                hours_in=24+hours
+            else:
+                hours_in=hours
+
+            sleep_entry.s_time=s_time
+            sleep_entry.e_time=e_time
+            sleep_entry.h_slept=hours_in
+            await sleep_entry.save()
+            return sleep_entry
+        else:
+            raise ShapeShyftException("E1025",400)
     else:
-        hours_in=hours
-
-    sleep_entry.s_time=s
-    sleep_entry.e_time=e
-    sleep_entry.h_slept=hours_in
-    await sleep_entry.save()
-
-    return sleep_entry
+        raise ShapeShyftException("E1026",400)
 
 @router.get("/tips",response_model=tipResponse, responses=responses)
 async def tips(height:float, weight:float, current_user: UserAccount = Security(get_current_user)):
