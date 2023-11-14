@@ -46,9 +46,10 @@ async def get_sleep(current_user: UserAccount=Security(get_current_user)):
     """
     try:
         sleep_entry = await SleepEntries.all().filter(user=current_user)
+        return sleep_entry
     except:
         raise ShapeShyftException("E1023", 404)
-    return sleep_entry
+    
 
 #create sleep entry for today
 @router.post("/ceSleep", response_model=sEntryResponse, responses=responses)
