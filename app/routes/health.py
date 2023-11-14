@@ -46,9 +46,10 @@ async def get_sleep(current_user: UserAccount=Security(get_current_user)):
     """
     try:
         sleep_entry = await SleepEntries.all().filter(user=current_user)
+        return sleep_entry
     except:
         raise ShapeShyftException("E1023", 404)
-    return sleep_entry
+    
 
 #create sleep entry for today
 @router.post("/ceSleep", response_model=sEntryResponse, responses=responses)
@@ -91,7 +92,7 @@ async def create_or_edit_sleep(data : sEntry, current_user: UserAccount = Securi
         else:
             raise ShapeShyftException("E1025",400)
     else:
-        raise ShapeShyftException("E1024",400)
+        raise ShapeShyftException("E1026",400)
 
 @router.get("/tips",response_model=tipResponse, responses=responses)
 async def tips(height:float, weight:float, current_user: UserAccount = Security(get_current_user)):
