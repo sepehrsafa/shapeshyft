@@ -4,11 +4,14 @@ from app.schemas.food import (
     FoodSearchResponse,
     FoodCreateRequest,
     FoodModel as FoodModelSchema,
+    CalorieModel as CalorieModelSchema,
     TotalCaloriesResponse,
+    CaloriePredictionResponse,
+    PredictCaloriesRequest,
 )
 from typing import Annotated
 from app.services.auth.utils import get_current_user
-from app.models.food import FoodType, Food as FoodModel
+from app.models.food import FoodType, Food as FoodModel, Calories as CalorieModel
 from app.utils.response import responses
 from app.utils.exception import ShapeShyftException
 from app.services.auth import hash_password
@@ -16,6 +19,7 @@ from fatsecret import Fatsecret
 from app.models.user import UserAccount
 from decimal import Decimal
 from datetime import datetime
+from app.services.predictions import Calorie_Intake
 
 fs = Fatsecret("0047da412ebd469c9dd1895c7d3159d8", "2f91d6bcbaa94e72bea327eb4d6b0546")
 # create a search endpoint
@@ -38,6 +42,39 @@ async def create_food_for_user(
     food = await FoodModel.create(**data.dict(), user=current_user, date=date)
     return food
 
+# create calories
+@router.post("/createCalorieEntry", responses=responses)
+async def create_calorie_entry_for_user(
+    calories_req: str, current_user: UserAccount = Security(get_current_user)
+):
+    """
+    This endpoint creates a calorie entry for the user
+    """
+    
+    # Check if the entry already exists for the user
+    existing_entry = await CalorieModel.filter(
+        email=current_user.email,
+        user=current_user
+    ).first()
+
+    if existing_entry:
+        # If the entry exists, update the calories value
+        existing_entry.calories = calories_req
+        await existing_entry.save()
+        return existing_entry
+    else:
+        # If the entry doesn't exist, create a new one
+        cal = await CalorieModel.create(calories=calories_req, user = current_user, email=current_user.email)
+        return cal
+
+@router.post("/cals", response_model=CaloriePredictionResponse, responses=responses)
+async def get_calorie_prediction(data: PredictCaloriesRequest):
+    input_dict = data.model_dump()
+    weight = input_dict["weight"]
+    height = input_dict["height"]
+    age = input_dict["age"]
+    output = await Calorie_Intake.predict_caloric_intake(weight, height, age)
+    return {"calories": output}
 
 @router.get("/search", response_model=FoodSearchResponse, responses=responses)
 async def search_food_database(

@@ -3,7 +3,7 @@ from pydantic import UUID4, BaseModel, EmailStr, validator, Field
 
 from .general import Response
 
-from app.models.food import FoodType, Food as FoodModel
+from app.models.food import FoodType, Food as FoodModel, Calories as CalorieModel
 
 from tortoise.contrib.pydantic import pydantic_model_creator
 from decimal import Decimal
@@ -13,6 +13,9 @@ FoodModel = pydantic_model_creator(
     FoodModel, name="FoodModel", exclude=["type", "user"]
 )
 
+CalorieModel = pydantic_model_creator(
+    CalorieModel, name="CalorieModel", exclude=["type", "user"]
+)
 
 class Food(BaseModel):
     name: str
@@ -35,3 +38,12 @@ class FoodCreateRequest(Food):
 
 class TotalCaloriesResponse(Response):
     total_calories: Decimal
+
+class PredictCaloriesRequest(BaseModel):
+    weight: float
+    height: float
+    age: int
+
+class CaloriePredictionResponse(Response):
+    calories: float
+
