@@ -36,7 +36,12 @@ class sEntryResponse(Response):
     e_time:  datetime.time
     h_slept: float
 
+class bmiEntry(BaseModel):
+    height: float
+    weight : float 
+
 class tipResponse(Response):
+    bmi : float
     s_rec: str
     w_rec: str
     status: str

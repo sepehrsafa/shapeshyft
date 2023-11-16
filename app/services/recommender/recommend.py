@@ -77,3 +77,7 @@ def bmi_rec(height,weight):
         }
     return rec
     
+def bmi_calc(height,weight):
+    #height in cm and weight in kg.
+    bmi=weight/((height/100)**2)
+    return bmi
