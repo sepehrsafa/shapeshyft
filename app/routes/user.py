@@ -3,16 +3,13 @@ from app.models.user import UserAccount
 from app.schemas.user import (
     UserAccountCreateRequest,
     UserAccountResponse,
-    CaloriePredictionResponse,
-    PredictCaloriesRequest,
+
 )
 from typing import Annotated
 from app.services.auth.utils import get_current_user
-import json
 from app.utils.response import responses
 from app.utils.exception import ShapeShyftException
 from app.services.auth import hash_password
-from app.services.predictions import Calorie_Intake
 
 router = APIRouter(
     tags=["User Account"],
@@ -42,14 +39,7 @@ async def get_me(current_user: UserAccount = Security(get_current_user)):
     return current_user
 
 
-@router.post("/cals", response_model=CaloriePredictionResponse, responses=responses)
-async def get_calorie_prediction(data: PredictCaloriesRequest):
-    input_dict = data.model_dump()
-    weight = input_dict["weight"]
-    height = input_dict["height"]
-    age = input_dict["age"]
-    output = await Calorie_Intake.predict_caloric_intake(weight, height, age)
-    return {"calories": output}
+
 
 
 @router.get("/{uuid}", response_model=UserAccountResponse, responses=responses)

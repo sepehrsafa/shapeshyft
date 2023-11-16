@@ -27,3 +27,11 @@ class Food(AuditableModel):
 
     class Meta:
         table = "foods_2"
+
+class Calories(AuditableModel):
+    email = fields.CharField(max_length = 100, pk = True)
+    user = fields.ForeignKeyField("models.UserAccount", related_name="calories")
+    calories = fields.CharField(max_length = 100)
+
+    class Meta: 
+        table = "UserCalorieEntries"
