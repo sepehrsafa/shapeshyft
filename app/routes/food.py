@@ -76,6 +76,21 @@ async def get_calorie_prediction(data: PredictCaloriesRequest):
     output = await Calorie_Intake.predict_caloric_intake(weight, height, age)
     return {"calories": output}
 
+@router.get("/getCalories", responses=responses)
+async def get_calories_from_database(current_user: UserAccount = Security(get_current_user)):
+    # Check if the entry already exists for the user
+    existing_entry = await CalorieModel.filter(
+        email=current_user.email,
+        user=current_user
+    ).first()
+
+    if existing_entry:
+        # If the entry exists, update the calories value
+        return {"Calories": existing_entry.calories}
+    else:
+        # If the entry doesn't exist, create a new one
+        return {"Calories": -1}
+
 @router.get("/search", response_model=FoodSearchResponse, responses=responses)
 async def search_food_database(
     query: str, current_user: UserAccount = Security(get_current_user)
