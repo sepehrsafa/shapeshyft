@@ -78,6 +78,7 @@ async def get_calorie_prediction(data: PredictCaloriesRequest):
     age = input_dict["age"]
     output = await Calorie_Intake.predict_caloric_intake(weight, height, age)
     return {"calories": output}
+
 @router.post("/createMealEntry",response_model = MealModelSchema, responses=responses)
 async def create_meal_plan_for_user(
     data: MealPlan, current_user: UserAccount = Security(get_current_user)
@@ -105,6 +106,9 @@ async def recommend_meals(
         return {'breakfast': breakfast, 'lunch':lunch, 'dinner':dinner, 'snack':snack,'calories': str(calories)}
     else: 
         raise ShapeShyftException("E1025", 400)
+    
+#@router.get("/getMealRecommendations", response_model = MealModelSchema, responses=responses)
+#async def get_meal_plan_for_user()
 
 @router.get("/search", response_model=FoodSearchResponse, responses=responses)
 async def search_food_database(

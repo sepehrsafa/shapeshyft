@@ -15,6 +15,6 @@ __all__ = [
     "WaterEntries",
     "Steps",
     "SleepEntries",
-    "Meals"
+    "Meals",
     "Calories"
 ]
