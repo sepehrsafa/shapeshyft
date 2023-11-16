@@ -26,5 +26,7 @@ exception_codes = {
     "E1019": "Invalid Refresh Token",
     "E1023": "Not found",
     "E1024": "Duplicate entry",
-    "E1025": "Calorie input exceeds threshold 9000 or is under 400"
+    "E1025": "Invalid format for time",
+    "E1026": "Time cannot be of type 'None'",
+    "E1055": "Calorie input exceeds threshold 9000 or is under 400"
 }

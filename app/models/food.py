@@ -38,3 +38,29 @@ class Meals(AuditableModel):
     calories = fields.CharField(max_length = 10)
     class Meta: 
         table = "DailyMealPlan"
+
+class Calories(AuditableModel):
+    email = fields.CharField(max_length = 100, pk = True)
+    user = fields.ForeignKeyField("models.UserAccount", related_name="calories")
+    calories = fields.CharField(max_length = 100)
+
+    class Meta: 
+        table = "UserCalorieEntries"
+
+class Meals(AuditableModel):
+    uuid = fields.UUIDField(pk=True, default=uuid.uuid4)
+    user = fields.ForeignKeyField("models.UserAccount", related_name="mealplan")
+    breakfast = fields.CharField(max_length = 100)
+    lunch = fields.CharField(max_length = 100)
+    dinner = fields.CharField(max_length = 100)
+    snack = fields.CharField(max_length = 100)
+    calories = fields.CharField(max_length = 10)
+    class Meta: 
+        table = "DailyMealPlan"
+class Calories(AuditableModel):
+    email = fields.CharField(max_length = 100, pk = True)
+    user = fields.ForeignKeyField("models.UserAccount", related_name="calories")
+    calories = fields.CharField(max_length = 100)
+
+    class Meta: 
+        table = "UserCalorieEntries"
