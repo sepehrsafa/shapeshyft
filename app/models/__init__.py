@@ -2,7 +2,7 @@ from .user import UserAccount
 from .token import UserToken
 from .audit import AuditLog, AuditableModel
 from .health import WaterEntries, SleepEntries
-from .food import Food, FoodType
+from .food import Food, FoodType, Calories
 from .exercise import Steps
 
 __all__ = [
@@ -15,4 +15,5 @@ __all__ = [
     "WaterEntries",
     "Steps",
     "SleepEntries",
+    "Calories"
 ]
