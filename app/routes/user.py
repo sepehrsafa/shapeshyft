@@ -3,13 +3,13 @@ from app.models.user import UserAccount
 from app.schemas.user import (
     UserAccountCreateRequest,
     UserAccountResponse,
-
 )
 from typing import Annotated
 from app.services.auth.utils import get_current_user
 from app.utils.response import responses
 from app.utils.exception import ShapeShyftException
 from app.services.auth import hash_password
+from app.services.predictions import Calorie_Intake
 
 router = APIRouter(
     tags=["User Account"],
@@ -23,7 +23,13 @@ async def create_user_account(data: UserAccountCreateRequest):
     hashed_password = await hash_password(data.password)
     data = data.dict()
     data.pop("password")
-    user_account = await UserAccount.create(**data, hashed_password=hashed_password)
+    suggested_calories = await Calorie_Intake.predict_caloric_intake(
+        data.get("weight", 0), data.get("height", 0), data.get("age", 0)
+    )
+
+    user_account = await UserAccount.create(
+        **data, hashed_password=hashed_password, suggested_calories=suggested_calories
+    )
     return user_account
 
 
@@ -37,9 +43,6 @@ async def get_user_accounts(current_user: UserAccount = Security(get_current_use
 @router.get("/me", response_model=UserAccountResponse, responses=responses)
 async def get_me(current_user: UserAccount = Security(get_current_user)):
     return current_user
-
-
-
 
 
 @router.get("/{uuid}", response_model=UserAccountResponse, responses=responses)

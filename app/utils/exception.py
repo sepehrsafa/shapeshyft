@@ -28,7 +28,7 @@ exception_codes = {
     "E1024": "Duplicate entry",
     "E1025": "Invalid format for time",
     "E1026": "Time cannot be of type 'None'",
-    "E1027": "Division by zero"
+    "E1027": "Division by zero",
     "E1055": "Calorie input exceeds threshold 9000 or is under 400"
 
 }

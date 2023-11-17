@@ -14,7 +14,12 @@ from app.schemas.food import (
 )
 from typing import Annotated
 from app.services.auth.utils import get_current_user
-from app.models.food import FoodType, Food as FoodModel, Calories as CalorieModel, Meals as MealModel
+from app.models.food import (
+    FoodType,
+    Food as FoodModel,
+    Calories as CalorieModel,
+    Meals as MealModel,
+)
 from app.utils.response import responses
 from app.utils.exception import ShapeShyftException
 from app.services.auth import hash_password
@@ -32,6 +37,7 @@ router = APIRouter(
     tags=["Food & Calories"],
 )
 
+
 # create foood
 @router.post("/", response_model=FoodModelSchema, responses=responses)
 async def create_food_for_user(
@@ -45,6 +51,23 @@ async def create_food_for_user(
     food = await FoodModel.create(**data.dict(), user=current_user, date=date)
     return food
 
+
+# delete food by uuid
+@router.delete("/{uuid}", response_model=FoodModelSchema, responses=responses)
+async def delete_food_by_uuid(
+    uuid: str, current_user: UserAccount = Security(get_current_user)
+):
+    """
+    This endpoint deletes a food item by uuid
+    """
+    food = await FoodModel.filter(uuid=uuid, user=current_user).first()
+    if food:
+        await food.delete()
+        return food
+    else:
+        raise ShapeShyftException("E1023", 400)
+
+
 # create calories
 @router.post("/createCalorieEntry", responses=responses)
 async def create_calorie_entry_for_user(
@@ -53,11 +76,10 @@ async def create_calorie_entry_for_user(
     """
     This endpoint creates a calorie entry for the user
     """
-    
+
     # Check if the entry already exists for the user
     existing_entry = await CalorieModel.filter(
-        email=current_user.email,
-        user=current_user
+        email=current_user.email, user=current_user
     ).first()
 
     if existing_entry:
@@ -67,8 +89,11 @@ async def create_calorie_entry_for_user(
         return existing_entry
     else:
         # If the entry doesn't exist, create a new one
-        cal = await CalorieModel.create(calories=calories_req, user = current_user, email=current_user.email)
+        cal = await CalorieModel.create(
+            calories=calories_req, user=current_user, email=current_user.email
+        )
         return cal
+
 
 @router.post("/cals", response_model=CaloriePredictionResponse, responses=responses)
 async def get_calorie_prediction(data: PredictCaloriesRequest):
@@ -80,7 +105,7 @@ async def get_calorie_prediction(data: PredictCaloriesRequest):
     return {"calories": output}
 
 
-@router.post("/createMealEntry",response_model = MealModelSchema, responses=responses)
+@router.post("/createMealEntry", response_model=MealModelSchema, responses=responses)
 async def create_meal_plan_for_user(
     data: MealPlan, current_user: UserAccount = Security(get_current_user)
 ):
@@ -90,12 +115,14 @@ async def create_meal_plan_for_user(
     meal = await MealModel.create(**data.dict(), user=current_user)
     return meal
 
+
 @router.get("/getCalories", responses=responses)
-async def get_calories_from_database(current_user: UserAccount = Security(get_current_user)):
+async def get_calories_from_database(
+    current_user: UserAccount = Security(get_current_user),
+):
     # Check if the entry already exists for the user
     existing_entry = await CalorieModel.filter(
-        email=current_user.email,
-        user=current_user
+        email=current_user.email, user=current_user
     ).first()
 
     if existing_entry:
@@ -105,31 +132,40 @@ async def get_calories_from_database(current_user: UserAccount = Security(get_cu
         # If the entry doesn't exist, create a new one
         return {"Calories": -1}
 
-@router.get("/mealRecommendaton",response_model = MealRecommendationResponse, responses=responses)
-async def recommend_meals(
-    calories: int
-):
+
+@router.get(
+    "/mealRecommendaton", response_model=MealRecommendationResponse, responses=responses
+)
+async def recommend_meals(calories: int):
     """
     This endpoint returns a meal plan recommendation for the user
     """
-    if(calories <= 9000 and calories >= 400):
+    if calories <= 9000 and calories >= 400:
         meals = meal_recommendor.recommend_meal(calories)
-        calories = meals['calorie_intake']
-        breakfast = meals['meals']['breakfast']
-        lunch = meals['meals']['lunch']
-        dinner = meals['meals']['dinner']
-        snack = meals['meals']['snacks']
-        return {'breakfast': breakfast, 'lunch':lunch, 'dinner':dinner, 'snack':snack,'calories': str(calories)}
-    else: 
+        calories = meals["calorie_intake"]
+        breakfast = meals["meals"]["breakfast"]
+        lunch = meals["meals"]["lunch"]
+        dinner = meals["meals"]["dinner"]
+        snack = meals["meals"]["snacks"]
+        return {
+            "breakfast": breakfast,
+            "lunch": lunch,
+            "dinner": dinner,
+            "snack": snack,
+            "calories": str(calories),
+        }
+    else:
         raise ShapeShyftException("E1055", 400)
-    
+
+
 @router.get("/getMealRecommendations", responses=responses)
-async def get_meal_plan_from_database(current_user: UserAccount = Security(get_current_user)):
-    meals = await MealModel.filter(
-        user=current_user
-    )
+async def get_meal_plan_from_database(
+    current_user: UserAccount = Security(get_current_user),
+):
+    meals = await MealModel.filter(user=current_user)
 
     return meals
+
 
 @router.get("/search", response_model=FoodSearchResponse, responses=responses)
 async def search_food_database(
@@ -171,7 +207,7 @@ async def search_food_database(
 @router.get("/totalCalories", response_model=TotalCaloriesResponse, responses=responses)
 async def get_sum_of_calories_for_user(
     current_user: UserAccount = Security(get_current_user),
-    date: str = datetime.today().strftime("%Y-%m-%d")
+    date: str = datetime.today().strftime("%Y-%m-%d"),
 ):
     """
     This endpoint gets the sum of all calories for the user
@@ -189,8 +225,9 @@ async def get_sum_of_calories_for_user(
 # get all by type
 @router.get("/{type}", response_model=list[FoodModelSchema], responses=responses)
 async def get_food_by_type_for_user(
-    type: FoodType, current_user: UserAccount = Security(get_current_user),
-    date: str = datetime.today().strftime("%Y-%m-%d")
+    type: FoodType,
+    current_user: UserAccount = Security(get_current_user),
+    date: str = datetime.today().strftime("%Y-%m-%d"),
 ):
     """
     This endpoint gets all food items by type for the user
