@@ -26,7 +26,7 @@ class Food(AuditableModel):
     date = fields.DateField()
 
     class Meta:
-        table = "foods_2"
+        table = "foods_11-17-2023"
 
 class Meals(AuditableModel):
     uuid = fields.UUIDField(pk=True, default=uuid.uuid4)
@@ -37,7 +37,7 @@ class Meals(AuditableModel):
     snack = fields.CharField(max_length = 100)
     calories = fields.CharField(max_length = 10)
     class Meta: 
-        table = "DailyMealPlan"
+        table = "DailyMealPlan_11_17_2023"
         
 class Calories(AuditableModel):
     email = fields.CharField(max_length = 100, pk = True)
@@ -45,4 +45,4 @@ class Calories(AuditableModel):
     calories = fields.CharField(max_length = 100)
 
     class Meta: 
-        table = "UserCalorieEntries"
+        table = "UserCalorieEntries_11_17_2023"

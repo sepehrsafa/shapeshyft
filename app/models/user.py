@@ -32,7 +32,7 @@ class UserAccount(AuditableModel):
     hashed_password = fields.CharField(max_length=300, null=True)
 
     class Meta:
-        table = "user_account_sepehr"
+        table = "user_account_11_17_2023"
 
     def __str__(self):
         return f"{self.phone_number}"

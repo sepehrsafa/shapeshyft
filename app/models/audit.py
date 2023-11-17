@@ -5,6 +5,7 @@ from tortoise import fields
 from tortoise.models import Model
 from app.utils.exception import ShapeShyftException
 
+
 class TypeEnum(str, Enum):
     CREATE = "CREATE"
     UPDATE = "UPDATE"
@@ -21,6 +22,9 @@ class AuditLog(Model):
     changed_by = fields.ForeignKeyField(
         "models.UserAccount", related_name="audit_logs", null=True
     )
+
+    class Meta:
+        table = "audit_log_11-17-2023"
 
 
 async def log_changes(instance, model_pk, type, changes, user=None):

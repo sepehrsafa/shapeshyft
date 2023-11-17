@@ -8,4 +8,4 @@ class UserToken(models.Model):
     expire = fields.DatetimeField()
 
     class Meta:
-        table = "user_tokens_sepehr"
+        table = "user_tokens_11_17_2023"

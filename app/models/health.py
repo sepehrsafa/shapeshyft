@@ -12,7 +12,7 @@ class WaterEntries(AuditableModel):
     time = fields.DatetimeField(auto_now=True)
 
     class Meta:
-        table = "hydration_log_4"
+        table = "hydration_log_11_17_2023"
 
 class SleepEntries(AuditableModel): 
     uuid = fields.UUIDField(pk=True, default=uuid.uuid4)
@@ -23,7 +23,7 @@ class SleepEntries(AuditableModel):
     h_slept = fields.FloatField(default=0)
 
     class Meta:
-        table = "sleep_log_4"
+        table = "sleep_log_11_17_2023"
 
 class BMI(AuditableModel): 
     uuid = fields.UUIDField(pk=True, default=uuid.uuid4)
@@ -33,4 +33,4 @@ class BMI(AuditableModel):
     weight = fields.FloatField()
 
     class Meta:
-        table = "bmi_log"
+        table = "bmi_log_11_17_2023"
