@@ -68,41 +68,6 @@ async def delete_food_by_uuid(
         raise ShapeShyftException("E1023", 400)
 
 
-# create calories
-@router.post("/createCalorieEntry", responses=responses)
-async def create_calorie_entry_for_user(
-    calories_req: str, current_user: UserAccount = Security(get_current_user)
-):
-    """
-    This endpoint creates a calorie entry for the user
-    """
-
-    # Check if the entry already exists for the user
-    existing_entry = await CalorieModel.filter(
-        email=current_user.email, user=current_user
-    ).first()
-
-    if existing_entry:
-        # If the entry exists, update the calories value
-        existing_entry.calories = calories_req
-        await existing_entry.save()
-        return existing_entry
-    else:
-        # If the entry doesn't exist, create a new one
-        cal = await CalorieModel.create(
-            calories=calories_req, user=current_user, email=current_user.email
-        )
-        return cal
-
-
-@router.post("/cals", response_model=CaloriePredictionResponse, responses=responses)
-async def get_calorie_prediction(data: PredictCaloriesRequest):
-    input_dict = data.model_dump()
-    weight = input_dict["weight"]
-    height = input_dict["height"]
-    age = input_dict["age"]
-    output = await Calorie_Intake.predict_caloric_intake(weight, height, age)
-    return {"calories": output}
 
 
 @router.post("/createMealEntry", response_model=MealModelSchema, responses=responses)
@@ -115,22 +80,6 @@ async def create_meal_plan_for_user(
     meal = await MealModel.create(**data.dict(), user=current_user)
     return meal
 
-
-@router.get("/getCalories", responses=responses)
-async def get_calories_from_database(
-    current_user: UserAccount = Security(get_current_user),
-):
-    # Check if the entry already exists for the user
-    existing_entry = await CalorieModel.filter(
-        email=current_user.email, user=current_user
-    ).first()
-
-    if existing_entry:
-        # If the entry exists, update the calories value
-        return {"Calories": existing_entry.calories}
-    else:
-        # If the entry doesn't exist, create a new one
-        return {"Calories": -1}
 
 
 @router.get(
