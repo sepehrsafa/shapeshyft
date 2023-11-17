@@ -13,9 +13,9 @@ class UserAccountCreateRequest(Password):
     email: Optional[EmailStr] = None
     first_name: Optional[str] = None
     last_name: Optional[str] = None
-    age: Optional[int] = None
-    weight: Optional[int] = None
-    height: Optional[int] = None
+    age: Optional[int] = 0
+    weight: Optional[int] = 0
+    height: Optional[int] = 0
 
 
 class UserAccount(BaseModel):
