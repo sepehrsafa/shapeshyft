@@ -649,9 +649,12 @@ async def get_random_exercises(current_user: UserAccount = Security(get_current_
 @router.get("/getSteps", response_model=StepsResponse, responses=responses)
 async def get_steps(current_user: UserAccount = Security(get_current_user)):
     """
-    This endpoint returns the number of steps the user has done as a string
+    This endpoint returns the number of steps the user has done as a string, or creates a step counter if it doesn't exist
     """
-    steps_log = await Steps.get(user=current_user)
+    if await Steps.exists(user=current_user) == False:
+        steps_log = await Steps.create(steps="0", user=current_user)
+    else:
+        steps_log = await Steps.get(user=current_user)
     return steps_log
 
 
@@ -660,25 +663,13 @@ async def update_steps(
     additional_steps: int, current_user: UserAccount = Security(get_current_user)
 ):
     """
-    This endpoint changes the number of steps the user by the integer provided
+    This endpoint changes the number of steps the user by the integer provided, or creates a step counter if it doesn't exist
     """
-    steps_log = await Steps.get(user=current_user)
-    steps_log.steps = str(int(steps_log.steps) + additional_steps)
-    await steps_log.save()
+    if await Steps.exists(user=current_user):
+        steps_log = await Steps.get(user=current_user)
+        steps_log.steps = str(int(steps_log.steps) + additional_steps)
+        await steps_log.save()
+    else:
+        steps_log = await Steps.create(steps=str(additional_steps), user=current_user)
 
     return steps_log
-
-
-@router.post("/createSteps", response_model=StepsResponse, responses=responses)
-async def create_steps(
-    data: CreateStepsEntry, current_user: UserAccount = Security(get_current_user)
-):
-    """
-    This endpoint creates a step counter for the user
-    """
-    data = data.dict()
-    if await Steps.exists(user=current_user) == False:
-        steps_log = await Steps.create(**data, user=current_user)
-        return steps_log
-    else:
-        raise ShapeShyftException("E1024", 400)
