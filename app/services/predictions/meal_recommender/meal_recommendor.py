@@ -2,11 +2,11 @@ import pandas as pd
 import joblib
 import json
 
-final_df = pd.read_csv("./app/services/predictions/meal_recommender/preprocessed_mealplans.csv")
+final_df = pd.read_csv("app/services/predictions/meal_recommender/preprocessed_mealplans.csv")
 
 def recommend_meal(calorie_intake, tolerance=100):
     
-    model = joblib.load('./app/services/predictions/meal_recommender/meal_recommendation_model.pkl')
+    model = joblib.load('app/services/predictions/meal_recommender/meal_recommendation_model.pkl')
 
     possible_meals = final_df[(final_df['calories'] >= calorie_intake - tolerance) &
                               (final_df['calories'] <= calorie_intake + tolerance)]
