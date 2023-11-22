@@ -6,10 +6,11 @@ import uuid
 
 class Steps(AuditableModel):
     user = fields.ForeignKeyField("models.UserAccount", related_name="steps")
-    steps = fields.CharField(max_length=100, default="0")
+    date = fields.DateField()
+    steps = fields.IntField(default=0)
 
     class Meta:
-        table = "steps_11-17-2023"
+        table = "steps_11-22-2023"
 
 
 # IF WE ADD EXERCISE ENTRIES:
