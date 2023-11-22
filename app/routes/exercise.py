@@ -673,7 +673,6 @@ async def create_steps(
     If the user already has a steps entry for the current day, it will update overwriting the previous entry.
     """
     today = datetime.today().strftime("%Y-%m-%d")
-    today = "2021-11-22"
 
     try:
         steps_log = await Steps.get(user=current_user, date=today)
