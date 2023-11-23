@@ -11,7 +11,7 @@ from starlette.status import HTTP_400_BAD_REQUEST, HTTP_422_UNPROCESSABLE_ENTITY
 from tortoise.contrib.fastapi import register_tortoise
 
 
-from app.routes import auth, user, food, health, exercise
+from app.routes import auth, user, food, health, exercise, recipes
 from app.config import tortoise_settings
 from app.schemas.general import Response
 from app.utils.exception import ShapeShyftException
@@ -43,6 +43,7 @@ app.include_router(auth.router, prefix=BASE_PREFIX + "account/v1/auth")
 app.include_router(food.router, prefix=BASE_PREFIX + "v1/food")
 app.include_router(health.router, prefix=BASE_PREFIX + "v1/health")
 app.include_router(exercise.router, prefix=BASE_PREFIX + "v1/exercise")
+app.include_router(recipes.router, prefix=BASE_PREFIX + "v1/recipe")
 
 
 register_tortoise(
