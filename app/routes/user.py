@@ -3,12 +3,9 @@ from app.models.user import UserAccount
 from app.schemas.user import (
     UserAccountCreateRequest,
     UserAccountResponse,
-    CaloriePredictionResponse,
-    PredictCaloriesRequest,
 )
 from typing import Annotated
 from app.services.auth.utils import get_current_user
-import json
 from app.utils.response import responses
 from app.utils.exception import ShapeShyftException
 from app.services.auth import hash_password
@@ -26,7 +23,13 @@ async def create_user_account(data: UserAccountCreateRequest):
     hashed_password = await hash_password(data.password)
     data = data.dict()
     data.pop("password")
-    user_account = await UserAccount.create(**data, hashed_password=hashed_password)
+    suggested_calories = await Calorie_Intake.predict_caloric_intake(
+        data.get("weight", 0), data.get("height", 0), data.get("age", 0)
+    )
+
+    user_account = await UserAccount.create(
+        **data, hashed_password=hashed_password, suggested_calories=suggested_calories
+    )
     return user_account
 
 
@@ -40,16 +43,6 @@ async def get_user_accounts(current_user: UserAccount = Security(get_current_use
 @router.get("/me", response_model=UserAccountResponse, responses=responses)
 async def get_me(current_user: UserAccount = Security(get_current_user)):
     return current_user
-
-
-@router.post("/cals", response_model=CaloriePredictionResponse, responses=responses)
-async def get_calorie_prediction(data: PredictCaloriesRequest):
-    input_dict = data.model_dump()
-    weight = input_dict["weight"]
-    height = input_dict["height"]
-    age = input_dict["age"]
-    output = await Calorie_Intake.predict_caloric_intake(weight, height, age)
-    return {"calories": output}
 
 
 @router.get("/{uuid}", response_model=UserAccountResponse, responses=responses)

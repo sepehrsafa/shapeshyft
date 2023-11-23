@@ -21,6 +21,10 @@ class UserAccount(AuditableModel):
 
     first_name = fields.CharField(max_length=100, null=True)
     last_name = fields.CharField(max_length=110, null=True)
+    age = fields.IntField(null=True)
+    weight = fields.IntField(null=True)
+    height = fields.IntField(null=True)
+    suggested_calories = fields.IntField(null=True)
 
     date_joined = fields.DatetimeField(auto_now_add=True)
     last_login = fields.DatetimeField(auto_now=True)
@@ -28,7 +32,7 @@ class UserAccount(AuditableModel):
     hashed_password = fields.CharField(max_length=300, null=True)
 
     class Meta:
-        table = "user_account"
+        table = "user_account_11_17_2023"
 
     def __str__(self):
         return f"{self.phone_number}"

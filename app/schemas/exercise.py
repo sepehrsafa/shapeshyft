@@ -3,6 +3,9 @@ from pydantic import BaseModel
 from .general import Response
 
 from tortoise.contrib.pydantic import pydantic_model_creator
+from app.models.exercise import Steps as StepsModel
+
+StepsModel = pydantic_model_creator(StepsModel, name="StepsModel", exclude=["id"])
 
 
 class Exercise(BaseModel):
@@ -22,5 +25,5 @@ class ExerciseListResponse(Response):
     items: list[Exercise]
 
 
-class StepsResponse(Response):
-    steps: str
+class StepsResponse(Response, StepsModel):
+    pass

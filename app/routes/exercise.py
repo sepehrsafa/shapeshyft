@@ -14,6 +14,8 @@ from app.schemas.exercise import (
     CreateStepsEntry,
 )
 
+import pytz
+from datetime import datetime
 
 API_KEY = "cj0WyK592A1TmR69GN0usQ==RYdWYu6qEPH2PsY3"
 
@@ -646,39 +648,39 @@ async def get_random_exercises(current_user: UserAccount = Security(get_current_
     return exs
 
 
-@router.get("/getSteps", response_model=StepsResponse, responses=responses)
-async def get_steps(current_user: UserAccount = Security(get_current_user)):
-    """
-    This endpoint returns the number of steps the user has done as a string
-    """
-    steps_log = await Steps.get(user=current_user)
-    return steps_log
-
-
-@router.put("/updateSteps", response_model=StepsResponse, responses=responses)
-async def update_steps(
-    additional_steps: int, current_user: UserAccount = Security(get_current_user)
+@router.get("/steps", response_model=StepsResponse, responses=responses)
+async def get_steps(
+    current_user: UserAccount = Security(get_current_user),
+    date: str = datetime.now(pytz.timezone('America/Toronto')).strftime("%Y-%m-%d"),
 ):
     """
-    This endpoint changes the number of steps the user by the integer provided
+    This endpoint returns the number of steps the user has taken for the current day.
+    Date param is optional and defaults to the current day. if a date is provided, it will return the steps for that day.
     """
-    steps_log = await Steps.get(user=current_user)
-    steps_log.steps = str(int(steps_log.steps) + additional_steps)
-    await steps_log.save()
+    try:
+        steps_log = await Steps.get(user=current_user, date=date)
+    except Exception as e:
+        steps_log = await Steps.create(user=current_user, date=date, steps=0)
 
     return steps_log
 
 
-@router.post("/createSteps", response_model=StepsResponse, responses=responses)
+@router.post("/steps", response_model=StepsResponse, responses=responses)
 async def create_steps(
     data: CreateStepsEntry, current_user: UserAccount = Security(get_current_user)
 ):
+    """ 
+    This method creates a new steps entry for the user for the current day
+    If the user already has a steps entry for the current day, it will update overwriting the previous entry.
     """
-    This endpoint creates a step counter for the user
-    """
-    data = data.dict()
-    if await Steps.exists(user=current_user) == False:
-        steps_log = await Steps.create(**data, user=current_user)
-        return steps_log
-    else:
-        raise ShapeShyftException("E1024", 400)
+    #get today in toronto time  
+    today = datetime.now(pytz.timezone('America/Toronto')).strftime("%Y-%m-%d")
+
+    try:
+        steps_log = await Steps.get(user=current_user, date=today)
+        steps_log.steps = data.steps
+        await steps_log.save()
+    except Exception as e:
+        steps_log = await Steps.create(user=current_user, date=today, steps=data.steps)
+
+    return steps_log
