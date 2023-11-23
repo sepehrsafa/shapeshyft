@@ -177,10 +177,12 @@ async def get_sum_of_calories_for_user(
 async def get_food_by_type_for_user(
     type: FoodType,
     current_user: UserAccount = Security(get_current_user),
-    date: str = datetime.now(pytz.timezone('America/Toronto')).strftime("%Y-%m-%d"),
+    date: str = "",
 ):
     """
     This endpoint gets all food items by type for the user
     """
+    if date == "":
+        date = datetime.now(pytz.timezone('America/Toronto')).strftime("%Y-%m-%d")
     foods = await FoodModel.all().filter(user=current_user, type=type, date=date)
     return foods
