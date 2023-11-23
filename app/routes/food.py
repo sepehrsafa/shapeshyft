@@ -29,6 +29,7 @@ from app.models.user import UserAccount
 from decimal import Decimal
 from datetime import datetime
 from app.services.predictions import Calorie_Intake
+import pytz
 
 fs = Fatsecret("0047da412ebd469c9dd1895c7d3159d8", "2f91d6bcbaa94e72bea327eb4d6b0546")
 # create a search endpoint
@@ -47,7 +48,7 @@ async def create_food_for_user(
     This endpoint creates a food item for the user
     """
     # get today's date from system
-    date = datetime.today().strftime("%Y-%m-%d")
+    date = datetime.now(pytz.timezone('America/Toronto')).strftime("%Y-%m-%d")
     food = await FoodModel.create(**data.dict(), user=current_user, date=date)
     return food
 
@@ -156,7 +157,7 @@ async def search_food_database(
 @router.get("/totalCalories", response_model=TotalCaloriesResponse, responses=responses)
 async def get_sum_of_calories_for_user(
     current_user: UserAccount = Security(get_current_user),
-    date: str = datetime.today().strftime("%Y-%m-%d"),
+    date: str = datetime.now(pytz.timezone('America/Toronto')).strftime("%Y-%m-%d"),
 ):
     """
     This endpoint gets the sum of all calories for the user
@@ -176,7 +177,7 @@ async def get_sum_of_calories_for_user(
 async def get_food_by_type_for_user(
     type: FoodType,
     current_user: UserAccount = Security(get_current_user),
-    date: str = datetime.today().strftime("%Y-%m-%d"),
+    date: str = datetime.now(pytz.timezone('America/Toronto')).strftime("%Y-%m-%d"),
 ):
     """
     This endpoint gets all food items by type for the user

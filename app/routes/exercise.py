@@ -14,6 +14,7 @@ from app.schemas.exercise import (
     CreateStepsEntry,
 )
 
+import pytz
 from datetime import datetime
 
 API_KEY = "cj0WyK592A1TmR69GN0usQ==RYdWYu6qEPH2PsY3"
@@ -650,7 +651,7 @@ async def get_random_exercises(current_user: UserAccount = Security(get_current_
 @router.get("/steps", response_model=StepsResponse, responses=responses)
 async def get_steps(
     current_user: UserAccount = Security(get_current_user),
-    date: str = datetime.today().strftime("%Y-%m-%d"),
+    date: str = datetime.now(pytz.timezone('America/Toronto')).strftime("%Y-%m-%d"),
 ):
     """
     This endpoint returns the number of steps the user has taken for the current day.
@@ -672,7 +673,8 @@ async def create_steps(
     This method creates a new steps entry for the user for the current day
     If the user already has a steps entry for the current day, it will update overwriting the previous entry.
     """
-    today = datetime.today().strftime("%Y-%m-%d")
+    #get today in toronto time  
+    today = datetime.now(pytz.timezone('America/Toronto')).strftime("%Y-%m-%d")
 
     try:
         steps_log = await Steps.get(user=current_user, date=today)
