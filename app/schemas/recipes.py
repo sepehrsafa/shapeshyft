@@ -17,7 +17,8 @@ class Recipe(BaseModel):
     name: str
     image: str
     description: str
-    # ingredients: list[str]
+    ingredients: str
+    instructions: str
     nutInfo: NutInfo
 
 class RecipeSearchResponse(Response):
