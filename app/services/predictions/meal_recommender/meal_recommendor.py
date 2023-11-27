@@ -36,7 +36,6 @@ try:
     final_df = final_df[final_columns_to_keep]
     final_df.rename(columns={'title': 'breakfast', 'title_lunch': 'lunch', 'title_dinner': 'dinner', 'title_snacks': 'snacks'}, inplace=True)
 
-    final_df.to_csv('../preprocessed_mealplans.csv', index=False)
 except Exception as e:
     raise Exception(f"Error joining dataframes: {e}")
 
